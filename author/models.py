@@ -15,6 +15,7 @@ class Author(db.Model):
         self.email = email
         self.username = username
         self.password = password
+        self.is_author = is_author
     
     # How to display when iteracting in the terminal
     def __repr__(self):
