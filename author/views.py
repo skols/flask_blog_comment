@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, session, request
 from author.form import RegisterForm, LoginForm
 from author.models import Author
 from author.decorators import login_required
+import bcrypt
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -13,19 +14,24 @@ def login():
         session['next'] = request.args.get('next', None)
     
     if form.validate_on_submit():
+        # After password has been hashed, need to change the validation
         # filter_by is like a select with a where
-        author = Author.query.filter_by(
-            username = form.username.data,
-            password = form.password.data
+        authors = Author.query.filter_by(
+            username = form.username.data
         ).limit(1)
-        if author.count():
-            session['username'] = form.username.data
-            if 'next' in session:
-                next = session.get('next')
-                session.pop('next')
-                return redirect(next)
+        if authors.count():
+            author = authors[0]
+            # Checking the hashed password
+            if bcrypt.hashpw(form.password.data, author.password) == author.password:
+                session['username'] = form.username.data
+                if 'next' in session:
+                    next = session.get('next')
+                    session.pop('next')
+                    return redirect(next)
+                else:
+                    return redirect(url_for('login_success'))
             else:
-                return redirect(url_for('login_success'))
+                error = "Incorrect username or password"
         else:
             error = "Incorrect username or password"
     return render_template('author/login.html', form=form, error=error)
@@ -45,3 +51,9 @@ def success():
 @login_required
 def login_success():
     return "Author logged in!"
+
+@app.route('/logout/')
+@login_required
+def logout():
+    session.pop('username')
+    return redirect(url_for('index'))

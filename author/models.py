@@ -5,7 +5,7 @@ class Author(db.Model):
     fullname = db.Column(db.String(80))
     email = db.Column(db.String(65), unique=True)
     username = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(80))
+    password = db.Column(db.String(60))
     # Author that can post to blog or comment only; True if post to blog
     is_author = db.Column(db.Boolean)
 
