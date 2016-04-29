@@ -16,20 +16,21 @@ def login():
     if form.validate_on_submit():
         # After password has been hashed, need to change the validation
         # filter_by is like a select with a where
-        authors = Author.query.filter_by(
+        author = Author.query.filter_by(
             username = form.username.data
-        ).limit(1)
-        if authors.count():
-            author = authors[0]
+        ).first()
+        if author:
             # Checking the hashed password
             if bcrypt.hashpw(form.password.data, author.password) == author.password:
                 session['username'] = form.username.data
+                session['is_author'] = author.is_author
                 if 'next' in session:
                     next = session.get('next')
                     session.pop('next')
                     return redirect(next)
                 else:
-                    return redirect(url_for('login_success'))
+                    # return redirect(url_for('login_success'))
+                    return redirect(url_for('admin'))
             else:
                 error = "Incorrect username or password"
         else:
