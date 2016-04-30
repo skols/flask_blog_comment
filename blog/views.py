@@ -9,7 +9,7 @@ import bcrypt
 from slugify import slugify
 
 # Constant to set posts per page
-POSTS_PER_PAGE = 3
+POSTS_PER_PAGE = 5
 
 @app.route('/')
 @app.route('/index/')
@@ -21,7 +21,7 @@ def index(page=1):
         return redirect(url_for('setup'))
     # If page doesn't exist, returns 404 if set to True
     # With False, returns empty list instead
-    posts = Post.query.order_by(Post.publish_date.desc()).paginate(page, POSTS_PER_PAGE, False)
+    posts = Post.query.filter_by(live=True).order_by(Post.publish_date.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('blog/index.html', blog=blog, posts=posts)
 
 @app.route('/admin/')
@@ -110,10 +110,49 @@ def post():
         db.session.commit()
         return redirect(url_for('article', slug=slug))
         
-    return render_template('blog/post.html', form=form)
+    return render_template('blog/post.html', form=form, action="new")
 
 # slug is unique, so works for an id
 @app.route('/article/<slug>/')
 def article(slug):
     post = Post.query.filter_by(slug=slug).first_or_404()
     return render_template('blog/article.html', post=post)
+
+@app.route('/edit/<int:post_id>',methods=['GET','POST'])
+@author_required
+def edit(post_id):
+    # Return post form, but filled out
+    # Use existing PostForm
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    form = PostForm(obj=post) # post here is the post in previous line; fills out the form with that data
+    if form.validate_on_submit():
+        original_image=post.image
+        form.populate_obj(post) # Replaces post with the contents of the form
+        if form.image.has_file():
+            image = request.files.get('image')
+            try:
+                filename = uploaded_images.save(image)
+            except:
+                flash("The image was not uploaded.")
+            if filename:
+                post.image=filename
+        else:
+            post.image = original_image
+        
+        if form.new_category.data:
+            new_category = Category(form.new_category.data)
+            db.session.add(new_category)
+            db.session.flush()
+            post.category = new_category
+        db.session.commit()
+        return redirect(url_for('article', slug=post.slug))
+    return render_template('blog/post.html', form=form, post=post, action="edit")
+
+@app.route('/delete/<int:post_id>')
+@author_required
+def delete(post_id):
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    post.live = False
+    db.session.commit()
+    flash("Article deleted.")
+    return redirect('/admin/')
