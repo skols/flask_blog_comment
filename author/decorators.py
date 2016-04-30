@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import session, request, redirect, url_for
+from flask import session, request, redirect, url_for, abort
 
 def login_required(f):
     @wraps(f)
@@ -9,3 +9,13 @@ def login_required(f):
             return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
+
+def author_required(f):
+    @wraps(f)
+    # arguments and keyword arguments
+    def decorated_function(*args, **kwargs):
+        if session.get('is_author') is None:
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+    

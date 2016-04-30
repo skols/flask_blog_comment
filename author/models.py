@@ -8,6 +8,8 @@ class Author(db.Model):
     password = db.Column(db.String(60))
     # Author that can post to blog or comment only; True if post to blog
     is_author = db.Column(db.Boolean)
+    
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     # What happens when object is first defined
     def __init__(self, fullname, email, username, password, is_author=False):

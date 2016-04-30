@@ -30,7 +30,7 @@ def login():
                     return redirect(next)
                 else:
                     # return redirect(url_for('login_success'))
-                    return redirect(url_for('admin'))
+                    return redirect(url_for('index'))
             else:
                 error = "Incorrect username or password"
         else:
@@ -48,13 +48,16 @@ def register():
 def success():
     return "Author registered!"
 
-@app.route('/login_success/')
-@login_required
-def login_success():
-    return "Author logged in!"
+
+
+# @app.route('/login_success/')
+# @login_required
+# def login_success():
+#     return "Author logged in!"
 
 @app.route('/logout/')
 @login_required
 def logout():
     session.pop('username')
+    session.pop('is_author')
     return redirect(url_for('index'))
