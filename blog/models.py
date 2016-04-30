@@ -1,4 +1,4 @@
-from flask_blog import db
+from flask_blog import db, uploaded_images
 from datetime import datetime
 
 class Blog(db.Model):
@@ -21,6 +21,7 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
     title = db.Column(db.String(80))
     body = db.Column(db.Text)
+    image = db.Column(db.String(255))
     # slug is the identifier for the article, e.g. /blog/2015/10/20/sql-alchemy-1.0.9-released/
     # date + title
     slug = db.Column(db.String(256), unique=True)
@@ -30,12 +31,18 @@ class Post(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref=db.backref('posts', lazy='dynamic'))
     
-    def __init__(self, blog, author, title, body, category, slug=None, publish_date=None, live=True):
+    # @property means creating a new calculated property of an object
+    @property
+    def imgsrc(self):
+        return uploaded_images.url(self.image)
+    
+    def __init__(self, blog, author, title, body, category, image=None, slug=None, publish_date=None, live=True):
         self.blog_id = blog.id
         self.author_id = author.id
         self.title = title
         self.body = body
         self.category_id = category.id
+        self.image = image
         self.slug = slug
         if publish_date is None:
             self.publish_date = datetime.utcnow()
