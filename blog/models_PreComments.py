@@ -30,14 +30,13 @@ class Post(db.Model):
     live = db.Column(db.Boolean)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref=db.backref('posts', lazy='dynamic'))
-    comment = db.Column(db.Text)
     
     # @property means creating a new calculated property of an object
     @property
     def imgsrc(self):
         return uploaded_images.url(self.image)
     
-    def __init__(self, blog, author, title, body, category, image=None, slug=None, publish_date=None, live=True, comment=None):
+    def __init__(self, blog, author, title, body, category, image=None, slug=None, publish_date=None, live=True):
         self.blog_id = blog.id
         self.author_id = author.id
         self.title = title
@@ -50,7 +49,6 @@ class Post(db.Model):
         else:
             self.publish_date = publish_date
         self.live = live
-        self.comment = comment
         
     def __repr__(self):
         return '<Post %r>' % self.title
@@ -65,11 +63,3 @@ class Category(db.Model):
     def __repr__(self):
         # return '<Category %r>' % self.name
         return self.name
-
-class Comment(db.Post):
-    author = db.Column(db.String(100))
-    body = db.Text
-    
-    def __init__(self, author, body):
-        self.author = author
-        self.body = body

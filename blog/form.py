@@ -27,4 +27,10 @@ class PostForm(Form):
     # Get category from database contents
     category = QuerySelectField('Category', query_factory=categories, allow_blank=True)
     new_category = StringField('New Category')
-    
+
+class CommentForm(Form):
+    author = StringField('Name', [
+        validators.Required(),
+        validators.Length(max=100)
+        ])
+    body = TextAreaField('Comment', validator=[validators.Required()])

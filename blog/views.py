@@ -1,9 +1,9 @@
 from flask_blog import app
 from flask import render_template, redirect, flash, url_for, session, abort, request
-from blog.form import SetupForm, PostForm
+from blog.form import SetupForm, PostForm, CommentForm
 from flask_blog import db, uploaded_images
 from author.models import Author
-from blog.models import Blog, Category, Post
+from blog.models import Blog, Category, Post, Comment
 from author.decorators import login_required, author_required
 import bcrypt
 from slugify import slugify
@@ -26,7 +26,7 @@ def index(page=1):
 
 @app.route('/admin/')
 @app.route('/admin/<int:page>')
-# login_required is a user created decorator; an author decorator
+# author_required is a user created decorator; an author decorator
 @author_required
 def admin(page=1):
     if session.get('is_author'):
@@ -116,6 +116,12 @@ def post():
 @app.route('/article/<slug>/')
 def article(slug):
     post = Post.query.filter_by(slug=slug).first_or_404()
+    form = CommentForm()
+    author = form.author
+    body = form.body
+    comment = Comment(author, body)
+    db.session.add(comment)
+    db.session.commit()
     return render_template('blog/article.html', post=post)
 
 @app.route('/edit/<int:post_id>',methods=['GET','POST'])

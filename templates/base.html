@@ -24,6 +24,7 @@
                 <hr />
                 <footer>
                     &copy; Copyright 2016
+                        - <a href="{{ url_for('index') }}">Home</a>
                     {% if session.get('is_author') %}
                         - <a href="{{ url_for('admin') }}">Admin</a>
                     {% endif %}
