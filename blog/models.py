@@ -66,10 +66,15 @@ class Category(db.Model):
         # return '<Category %r>' % self.name
         return self.name
 
-class Comment(db.Post):
+class Comment(db.Model):
+    # Need to have a primary key for SQLAlchemy to create the table
+    id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.String(100))
     body = db.Text
     
     def __init__(self, author, body):
         self.author = author
         self.body = body
+
+    def __repr__(self):
+        return self.name

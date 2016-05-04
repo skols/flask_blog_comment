@@ -113,16 +113,18 @@ def post():
     return render_template('blog/post.html', form=form, action="new")
 
 # slug is unique, so works for an id
-@app.route('/article/<slug>/')
+@app.route('/article/<slug>/', methods=['GET', 'POST'])
 def article(slug):
     post = Post.query.filter_by(slug=slug).first_or_404()
     form = CommentForm()
-    author = form.author
-    body = form.body
-    comment = Comment(author, body)
-    db.session.add(comment)
-    db.session.commit()
-    return render_template('blog/article.html', post=post)
+    if form.validate_on_submit():
+        comment_author = form.comment_author.data
+        comment_body = form.comment_body.data
+        comment = Comment(comment_author, comment_body)
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('article', slug=slug))
+    return render_template('blog/article.html', post=post, form=form)
 
 @app.route('/edit/<int:post_id>',methods=['GET','POST'])
 @author_required

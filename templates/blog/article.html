@@ -26,6 +26,23 @@
             Posted by <a href="#">{{ post.author.fullname }}</a> on {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
         </div>
         
+        <div>
+            {% from "_formhelpers.html" import render_field %}
+            
+            <form method="POST" action="{{ url_for('article', slug=post.slug) }}" role="form">
+            
+                {{ form.hidden_tag() }}
+                
+                <h2>Add a comment</h2>
+                
+                {{ render_field(form.comment_author, class='form-control') }}
+                {{ render_field(form.comment_body, class='form-control') }}
+                
+                <button type="submit" class="btn btn-warning">Post Comment</button>
+            
+            </form>
+            
+        </div>
     </div>
 </div>
 

@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import StringField, validators, TextAreaField
 from author.form import RegisterForm
-from blog.models import Category
+from blog.models import Category, Comment
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flask_wtf.file import FileField, FileAllowed # for images
 
@@ -29,8 +29,8 @@ class PostForm(Form):
     new_category = StringField('New Category')
 
 class CommentForm(Form):
-    author = StringField('Name', [
+    comment_author = StringField('Author', [
         validators.Required(),
         validators.Length(max=100)
         ])
-    body = TextAreaField('Comment', validator=[validators.Required()])
+    comment_body = TextAreaField('Comment', validators=[validators.Required()])
