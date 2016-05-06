@@ -38,13 +38,13 @@ class Post(db.Model):
     def imgsrc(self):
         return uploaded_images.url(self.image)
     
-    def __init__(self, blog, author, title, body, category, comments, image=None, slug=None, publish_date=None, live=True):
+    def __init__(self, blog, author, title, body, category, comment, image=None, slug=None, publish_date=None, live=True):
         self.blog_id = blog.id
         self.author_id = author.id
         self.title = title
         self.body = body
         self.category_id = category.id
-        self.comment_id = comments.id
+        self.comment_id = comment.id
         self.image = image
         self.slug = slug
         if publish_date is None:
