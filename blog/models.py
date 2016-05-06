@@ -30,19 +30,21 @@ class Post(db.Model):
     live = db.Column(db.Boolean)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref=db.backref('posts', lazy='dynamic'))
-    comment = db.Column(db.Text)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    comment = db.relationship('Comment', backref=db.backref('posts', lazy='dynamic'))
     
     # @property means creating a new calculated property of an object
     @property
     def imgsrc(self):
         return uploaded_images.url(self.image)
     
-    def __init__(self, blog, author, title, body, category, image=None, slug=None, publish_date=None, live=True, comment=None):
+    def __init__(self, blog, author, title, body, category, comments, image=None, slug=None, publish_date=None, live=True):
         self.blog_id = blog.id
         self.author_id = author.id
         self.title = title
         self.body = body
         self.category_id = category.id
+        self.comment_id = comments.id
         self.image = image
         self.slug = slug
         if publish_date is None:
@@ -50,7 +52,6 @@ class Post(db.Model):
         else:
             self.publish_date = publish_date
         self.live = live
-        self.comment = comment
         
     def __repr__(self):
         return '<Post %r>' % self.title
@@ -69,12 +70,12 @@ class Category(db.Model):
 class Comment(db.Model):
     # Need to have a primary key for SQLAlchemy to create the table
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.String(100))
-    body = db.Text
+    comment_author = db.Column(db.String(100))
+    comment_body = db.Column(db.Text)
     
-    def __init__(self, author, body):
-        self.author = author
-        self.body = body
+    def __init__(self, comment_author, comment_body):
+        self.comment_author = comment_author
+        self.comment_body = comment_body
 
     def __repr__(self):
         return self.name

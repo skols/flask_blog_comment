@@ -24,6 +24,12 @@
         
         <div class='text-muted'>
             Posted by <a href="#">{{ post.author.fullname }}</a> on {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
+            
+        </div>
+        
+        <div>
+            <h4>Comments</h4>
+            <p>{{ post.comment }}</p>
         </div>
         
         <div>
@@ -33,12 +39,14 @@
             
                 {{ form.hidden_tag() }}
                 
+                <!-- Show comments -->
+                
                 <h2>Add a comment</h2>
                 
                 {{ render_field(form.comment_author, class='form-control') }}
                 {{ render_field(form.comment_body, class='form-control') }}
                 
-                <button type="submit" class="btn btn-warning">Post Comment</button>
+                <button type="submit" class="btn btn-warning btn-sm">Post Comment</button>
             
             </form>
             
