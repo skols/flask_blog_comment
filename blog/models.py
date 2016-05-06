@@ -31,20 +31,20 @@ class Post(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref=db.backref('posts', lazy='dynamic'))
     comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
-    comment = db.relationship('Comment', backref=db.backref('posts', lazy='dynamic'))
+    comments = db.relationship('Comment', backref=db.backref('posts', lazy='dynamic'))
     
     # @property means creating a new calculated property of an object
     @property
     def imgsrc(self):
         return uploaded_images.url(self.image)
     
-    def __init__(self, blog, author, title, body, category, comment, image=None, slug=None, publish_date=None, live=True):
+    def __init__(self, blog, author, title, body, category, comments, image=None, slug=None, publish_date=None, live=True):
         self.blog_id = blog.id
         self.author_id = author.id
         self.title = title
         self.body = body
         self.category_id = category.id
-        self.comment_id = comment.id
+        self.comment_id = comments.id
         self.image = image
         self.slug = slug
         if publish_date is None:
@@ -72,6 +72,8 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     comment_author = db.Column(db.String(100))
     comment_body = db.Column(db.Text)
+    
+    # posts = db.relationship('Post', backref='comment', lazy='dynamic')
     
     def __init__(self, comment_author, comment_body):
         self.comment_author = comment_author
