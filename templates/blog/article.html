@@ -28,19 +28,23 @@
         </div>
         
         <div>
-            <h4>Comments</h4>
-            <p>{{ post.comments.comment_body }}</p>
-            <h6>{{ post.comments.comment_author }}</h6>
+            {% if post.comments %}
+                <h4>Comments</h4>
+                
+                    <p>{{ post.comments.comment_body }}</p>
+                    <h6> By {{ post.comments.comment_author }}</h6>
+                    
+                
+            {% endif %}
         </div>
         
         <div>
+            
             {% from "_formhelpers.html" import render_field %}
             
             <form method="POST" action="{{ url_for('article', slug=post.slug) }}" role="form">
             
                 {{ form.hidden_tag() }}
-                
-                <!-- Show comments -->
                 
                 <h2>Add a comment</h2>
                 

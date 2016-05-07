@@ -106,8 +106,7 @@ def post():
         body = form.body.data
         slug = slugify(title)
         post = Post(blog, author, title, body, category, filename, slug)
-        db.session.add(post)
-        db.session.commit()
+        post.save()
         return redirect(url_for('article', slug=slug))
         
     return render_template('blog/post.html', form=form, action="new")
@@ -121,7 +120,12 @@ def article(slug):
         comment_author = form.comment_author.data
         comment_body = form.comment_body.data
         comment = Comment(comment_author, comment_body)
+        form.populate_obj(comment)
         db.session.add(comment)
+        db.session.commit()
+        post.comment_id = comment.id
+        post.comments = Comment.query.filter_by(id=post.comment_id).first()
+        db.session.add(post)
         db.session.commit()
         return redirect(url_for('article', slug=slug))
     return render_template('blog/article.html', form=form, post=post)
