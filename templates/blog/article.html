@@ -28,21 +28,20 @@
         </div>
         
         <div>
-            {% if post.comments %}
+            {% for comment in post.comments.all() %}
                 <h4>Comments</h4>
                 
-                    <p>{{ post.comments.comment_body }}</p>
-                    <h6> By {{ post.comments.comment_author }}</h6>
+                    <p>{{ comment.comment_body }}</p>
+                    <h6> By {{ comment.comment_author }}</h6>
                     
-                
-            {% endif %}
+            {% endfor %}
         </div>
         
         <div>
             
             {% from "_formhelpers.html" import render_field %}
             
-            <form method="POST" action="{{ url_for('article', slug=post.slug) }}" role="form">
+            <form method="POST" action="{{ url_for('article', post_id=post.id, slug=post.slug) }}" role="form">
             
                 {{ form.hidden_tag() }}
                 

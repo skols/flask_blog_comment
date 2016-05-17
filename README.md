@@ -1,3 +1,4 @@
 flask_blog
 
-An early blog created using Python and Flask
+A simple blog created using Python and Flask
+Updated and correct comment functionality added here

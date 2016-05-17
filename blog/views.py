@@ -112,23 +112,41 @@ def post():
     return render_template('blog/post.html', form=form, action="new")
 
 # slug is unique, so works for an id
-@app.route('/article/<slug>/', methods=['GET', 'POST'])
-def article(slug):
-    post = Post.query.filter_by(slug=slug).first_or_404()
+# @app.route('/article/<slug>/', methods=['GET', 'POST'])
+# def article(slug):
+#     post = Post.query.filter_by(slug=slug).first_or_404(id)
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         comment_author = form.comment_author.data
+#         comment_body = form.comment_body.data
+#         post_id = post.id
+#         comment = Comment(post_id, comment_author, comment_body)
+#         # form.populate_obj(comment)
+#         # db.session.add(comment)
+#         # db.session.commit()
+#         post.comments.append(comment)
+#         db.session.add(post)
+#         db.session.commit()
+#         return redirect(url_for('article', slug=slug))
+#     return render_template('blog/article.html', form=form, post=post)
+
+@app.route('/article/<int:post_id>/', methods=['GET', 'POST'])
+def article(post_id):
+    post = Post.query.filter_by(id=post_id).first_or_404()
     form = CommentForm()
     if form.validate_on_submit():
         comment_author = form.comment_author.data
         comment_body = form.comment_body.data
-        comment = Comment(comment_author, comment_body)
-        form.populate_obj(comment)
+        post_id = post.id
+        comment = Comment(post_id, comment_author, comment_body)
         db.session.add(comment)
-        db.session.commit()
-        post.comment_id = comment.id
-        post.comments = Comment.query.filter_by(id=post.comment_id).first()
+        # db.session.commit()
+        post.comments.append(comment)
         db.session.add(post)
         db.session.commit()
-        return redirect(url_for('article', slug=slug))
-    return render_template('blog/article.html', form=form, post=post)
+        return redirect(url_for('article', post_id=post.id))
+    comments=Comment.query.all()
+    return render_template('blog/article.html', form=form, post=post, comments=comments)
 
 
 # @app.route('/article/<slug>/comment', methods=['GET', 'POST'])
